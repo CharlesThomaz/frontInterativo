@@ -1,3 +1,4 @@
+//FAZ A IMPORTAÇÃO DA BIBLIOTECA
 import * as THREE from 'three';
 
 // --- ELEMENTOS DA UI ---

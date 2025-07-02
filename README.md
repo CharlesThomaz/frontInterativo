@@ -31,5 +31,5 @@ Para rodar este projeto localmente, siga os passos:
 
 1.  Clone o repositório (se aplicável).
 2.  Navegue até o diretório do projeto.
-3.  Abra o arquivo `index.html` em seu navegador web. Não é necessário um servidor web para a funcionalidade básica, mas para o carregamento de módulos (`importmap`) e para evitar problemas de CORS em alguns navegadores, pode ser útil usar um servidor local simples (ex: `python -m http.server` ou `npx serve`).
+3.  Abra o arquivo `index.html` em seu navegador web. Não é necessário um servidor web para a funcionalidade básica, mas para o carregamento de módulos (`importmap`) e para evitar problemas de CORS em alguns navegadores, pode ser útil usar um servidor local simples ( `npx serve`).
 # frontInterativo
