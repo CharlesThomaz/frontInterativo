@@ -17,6 +17,13 @@ const garageLabels = {
     products: document.getElementById('label-products'),
 };
 
+// --- MOBILE CONTROLS ---
+const upBtn = document.getElementById('up-btn');
+const downBtn = document.getElementById('down-btn');
+const leftBtn = document.getElementById('left-btn');
+const rightBtn = document.getElementById('right-btn');
+const actionBtn = document.getElementById('action-btn');
+
 closeInfoButton.addEventListener('click', () => {
     infoDisplay.classList.add('hidden');
 });
@@ -155,6 +162,7 @@ function createMap() {
 
 // --- CONTROLES E FÍSICA ---
 const keyState = {};
+const activeMobileKeys = new Set(); // New Set to track active mobile button presses
 const clock = new THREE.Clock();
 const playerSpeed = 30;
 
@@ -166,14 +174,43 @@ window.addEventListener('keyup', (e) => {
     }
 });
 
+window.addEventListener('blur', () => {
+    // Reset all key states when the window loses focus
+    for (const key in keyState) {
+        keyState[key] = false;
+    }
+    activeMobileKeys.clear(); // Clear active mobile keys as well
+});
+
+// Mobile controls event listeners
+const setupMobileButton = (button, key) => {
+    button.addEventListener('touchstart', (e) => { e.preventDefault(); activeMobileKeys.add(key); });
+    button.addEventListener('touchend', () => { activeMobileKeys.delete(key); });
+    button.addEventListener('touchcancel', () => { activeMobileKeys.delete(key); });
+    button.addEventListener('mousedown', (e) => { e.preventDefault(); activeMobileKeys.add(key); });
+    button.addEventListener('mouseup', () => { activeMobileKeys.delete(key); });
+    button.addEventListener('mouseleave', () => { activeMobileKeys.delete(key); });
+};
+
+setupMobileButton(upBtn, 'ArrowUp');
+setupMobileButton(downBtn, 'ArrowDown');
+setupMobileButton(leftBtn, 'ArrowLeft');
+setupMobileButton(rightBtn, 'ArrowRight');
+
+actionBtn.addEventListener('click', () => {
+    if (currentGarageType) {
+        openPage(currentGarageType);
+    }
+});
+
 function updatePlayerMovement() {
     const dt = clock.getDelta();
     const moveDirection = new THREE.Vector3(0, 0, 0);
 
-    if (keyState['KeyW'] || keyState['ArrowUp']) moveDirection.z = -1;
-    if (keyState['KeyS'] || keyState['ArrowDown']) moveDirection.z = 1;
-    if (keyState['KeyA'] || keyState['ArrowLeft']) moveDirection.x = -1;
-    if (keyState['KeyD'] || keyState['ArrowRight']) moveDirection.x = 1;
+    if (keyState['KeyW'] || keyState['ArrowUp'] || activeMobileKeys.has('ArrowUp')) moveDirection.z = -1;
+    if (keyState['KeyS'] || keyState['ArrowDown'] || activeMobileKeys.has('ArrowDown')) moveDirection.z = 1;
+    if (keyState['KeyA'] || keyState['ArrowLeft'] || activeMobileKeys.has('ArrowLeft')) moveDirection.x = -1;
+    if (keyState['KeyD'] || keyState['ArrowRight'] || activeMobileKeys.has('ArrowRight')) moveDirection.x = 1;
     moveDirection.normalize();
 
     player.velocity.x = moveDirection.x * playerSpeed;
@@ -230,7 +267,7 @@ function updateGarageLabels() {
 
         // Verifica se a garagem está visível na tela
         const isVisible = tempV.z > -1 && tempV.z < 1; // Dentro do frustum da câmera
-        label.classList.toggle('hidden', !isVisible);
+        label.classList.toggle('hidden', !isVisible); // Labels are always visible if in camera frustum
     });
 }
 
@@ -296,13 +333,36 @@ animate();
 // --- REDIMENSIONAMENTO ---
 window.addEventListener('resize', () => {
     const newAspectRatio = window.innerWidth / window.innerHeight;
-    camera.left = -mapSize * newAspectRatio / 2;
-    camera.right = mapSize * newAspectRatio / 2;
-    camera.top = mapSize / 2;
-    camera.bottom = -mapSize / 2;
+    let viewWidth = mapSize;
+    let viewHeight = mapSize;
+
+    if (newAspectRatio > 1) { // Wider than tall
+        viewWidth = mapSize * newAspectRatio;
+    } else { // Taller than wide
+        viewHeight = mapSize / newAspectRatio;
+    }
+
+    camera.left = -viewWidth / 2;
+    camera.right = viewWidth / 2;
+    camera.top = viewHeight / 2;
+    camera.bottom = -viewHeight / 2;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
+    handleMobileControlsVisibility(); // Update mobile controls visibility on resize
 });
 
-// Dispara o evento resize uma vez para configurar a câmera corretamente no carregamento inicial
-// window.dispatchEvent(new Event('resize')); // Removido para evitar problemas de inicialização
+function handleMobileControlsVisibility() {
+    const mobileControls = document.getElementById('mobile-controls');
+    if (window.innerWidth <= 768) { // Matches the media query breakpoint
+        mobileControls.classList.remove('hidden');
+    } else {
+        mobileControls.classList.add('hidden');
+        // Reset keyState when mobile controls are hidden
+        for (const key in keyState) {
+            keyState[key] = false;
+        }
+    }
+}
+
+// Initial call to set up mobile controls visibility
+handleMobileControlsVisibility();

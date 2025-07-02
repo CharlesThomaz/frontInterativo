@@ -32,7 +32,7 @@ footer {
     background-color: rgba(0, 0, 0, 0.7);
     padding: 10px 0;
     text-align: center;
-    z-index: 100;
+    z-index: 101; /* Increased z-index to ensure visibility */
     font-size: 0.9em;
 }
 
@@ -130,4 +130,156 @@ footer {
     transform: translate(-50%, -50%); /* Centraliza o label */
     z-index: 50; /* Acima do canvas, abaixo dos popups */
     border: 1px solid #fff;
+}
+
+/* Mobile Controls - Initially hidden */
+#mobile-controls {
+    position: fixed;
+    bottom: 20px; /* Distance from bottom */
+    right: 20px; /* Distance from right */
+    left: auto; /* Remove left positioning */
+    transform: none; /* Remove transform */
+    display: none; /* Changed to none by default */
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    z-index: 100;
+    background-color: rgba(0, 0, 0, 0.6);
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.5);
+}
+
+.d-pad {
+    display: grid;
+    grid-template-areas:
+        ". up ."
+        "left . right"
+        ". down .";
+    gap: 5px;
+    width: 150px;
+    height: 150px;
+}
+
+.d-pad .control-btn {
+    background-color: #00aaff;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    font-size: 1.5em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    transition: background-color 0.2s;
+}
+
+.d-pad .control-btn:active {
+    background-color: #0088cc;
+}
+
+#up-btn { grid-area: up; }
+#left-btn { grid-area: left; }
+#right-btn { grid-area: right; }
+#down-btn { grid-area: down; }
+
+.d-pad .middle-row {
+    display: flex;
+    justify-content: space-between;
+    grid-area: left / left / right / right; /* Spans across the middle row */
+}
+
+#action-btn {
+    background-color: #ffd700;
+    color: #333;
+    border: none;
+    border-radius: 10px;
+    padding: 15px 30px;
+    font-size: 1.2em;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    transition: background-color 0.2s;
+    width: 100%;
+    max-width: 180px;
+}
+
+#action-btn:active {
+    background-color: #e6c200;
+}
+
+/* Media Queries for Responsiveness */
+
+/* For screens smaller than 768px (e.g., tablets and phones) */
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 1.5em;
+    }
+
+    footer {
+        font-size: 0.8em;
+        padding: 8px 0;
+    }
+
+    #ui-container {
+        top: 60px; /* Adjust for smaller header */
+        left: 5px;
+    }
+
+    #observation-box {
+        max-width: 180px; /* Make it smaller */
+        font-size: 0.7em;
+        padding: 5px;
+    }
+
+    #interaction-prompt {
+        font-size: 1em;
+        padding: 8px 15px;
+    }
+
+    #info-display {
+        padding: 20px;
+        font-size: 1em;
+        max-width: 95%;
+    }
+
+    #info-display h2 {
+        font-size: 1.3em;
+    }
+
+    #info-display button {
+        padding: 8px 15px;
+        font-size: 0.9em;
+    }
+
+    .garage-label {
+        font-size: 0.7em;
+        padding: 3px 8px;
+    }
+
+    /* Show mobile controls on smaller screens */
+    #mobile-controls {
+        display: flex;
+    }
+}
+
+/* For screens smaller than 480px (e.g., phones) */
+@media (max-width: 480px) {
+    header h1 {
+        font-size: 1.2em;
+    }
+
+    footer {
+        font-size: 0.7em;
+    }
+
+    #ui-container {
+        top: 60px; /* Adjusted for more space from header */
+    }
+
+    #mobile-controls {
+        /* bottom: 50px; Removed to use general positioning */
+    }
 }
