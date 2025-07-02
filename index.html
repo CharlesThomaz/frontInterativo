@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CHARLAO</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>O mestre da automação</h1>
+    </header>
+
+    <div id="ui-container">
+        <div id="observation-box">
+            <h3>Como Usar:</h3>
+            <p>Dirija o carrinho até uma garagem e pressione <b>Espaço</b> para acessar a página correspondente.</p>
+            <p>Use WASD/Setas para mover.</p>
+        </div>
+    </div>
+
+    <div id="interaction-prompt" class="hidden">
+        <p id="prompt-text"></p>
+    </div>
+
+    <div id="info-display" class="hidden">
+        <h2 id="info-title"></h2>
+        <p id="info-content"></p>
+        <button id="close-info">Fechar</button>
+    </div>
+
+    <canvas id="bg"></canvas>
+
+    <div id="garage-labels-container">
+        <span id="label-login" class="garage-label hidden">LOGIN</span>
+        <span id="label-about" class="garage-label hidden">SOBRE NÓS</span>
+        <span id="label-courses" class="garage-label hidden">CURSOS</span>
+        <span id="label-products" class="garage-label hidden">PRODUTOS</span>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Seu Projeto. Todos os direitos reservados.</p>
+    </footer>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.138.0/build/three.module.js"
+            }
+        }
+    </script>
+    <script type="module" src="main.js"></script>
+</body>
+</html>
