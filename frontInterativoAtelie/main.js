@@ -10,10 +10,10 @@ const closeInfoButton = document.getElementById('close-info');
 const interactionPrompt = document.getElementById('interaction-prompt');
 const promptText = document.getElementById('prompt-text');
 
-const garageLabels = {
+const atelierLabels = {
     login: document.getElementById('label-login'),
     about: document.getElementById('label-about'),
-    amigurumi: document.getElementById('label-amigurumi'),
+    courses: document.getElementById('label-courses'),
     products: document.getElementById('label-products'),
 };
 
@@ -30,7 +30,7 @@ closeInfoButton.addEventListener('click', () => {
 
 // --- SETUP DA CENA ---
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x4CAF50); // Gramado
+scene.background = new THREE.Color(0xF0F8FF); // AliceBlue, um azul muito claro
 
 const aspectRatio = window.innerWidth / window.innerHeight;
 const mapSize = 200; // Tamanho do mapa
@@ -45,58 +45,46 @@ camera.lookAt(scene.position);
 const renderer = new THREE.WebGLRenderer({ canvas: document.querySelector('#bg'), antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap; // Para sombras mais suaves
 
 // --- LUZES ---
 scene.add(new THREE.AmbientLight(0xffffff, 0.7));
 const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
-dirLight.position.set(50, 100, 50);
+dirLight.position.set(100, 100, 100); // Posição da luz para uma sombra mais pronunciada
 dirLight.castShadow = true;
 dirLight.shadow.mapSize.width = 2048;
 dirLight.shadow.mapSize.height = 2048;
+dirLight.shadow.camera.left = -mapSize / 2;
+dirLight.shadow.camera.right = mapSize / 2;
+dirLight.shadow.camera.top = mapSize / 2;
+dirLight.shadow.camera.bottom = -mapSize / 2;
+dirLight.shadow.camera.near = 0.5;
+dirLight.shadow.camera.far = 500;
+dirLight.shadow.camera.updateProjectionMatrix();
 scene.add(dirLight);
 
 // --- OBJETOS DO JOGO ---
-const garages = [];
-let currentGarageType = null;
-let highlightedGarage = null; // Para controlar a garagem destacada
+const atelierCorners = [];
+let currentCornerType = null;
+let highlightedCorner = null; // Para controlar o cantinho destacado
 
-// Materiais para destaque (Preto Neon)
+// Materiais para destaque (Rosa Neon)
 const highlightMaterial = new THREE.MeshStandardMaterial({
-    color: 0x050505, // Cor base muito escura
-    emissive: 0x330033, // Brilho roxo escuro
+    color: 0xFFC0CB, // Rosa claro
+    emissive: 0xFF69B4, // Rosa choque
     emissiveIntensity: 1.5 // Intensidade do brilho
 });
 
 // --- JOGADOR (CARRINHO) ---
-const carBody = new THREE.Mesh(
-    new THREE.BoxGeometry(5, 2, 8),
-    new THREE.MeshStandardMaterial({ color: 0x0077ff }) // Cor do corpo do carro
+const yarnBall = new THREE.Mesh(
+    new THREE.SphereGeometry(3, 32, 32), // Uma esfera para a bola de novelo
+    new THREE.MeshStandardMaterial({ color: 0xFFB6C1 }) // Rosa claro para o novelo
 );
-carBody.castShadow = true;
-
-const wheelMaterial = new THREE.MeshStandardMaterial({ color: 0x111111 }); // Rodas pretas
-const wheelGeometry = new THREE.CylinderGeometry(1.5, 1.5, 2, 16);
-
-const wheel1 = new THREE.Mesh(wheelGeometry, wheelMaterial);
-wheel1.rotation.x = Math.PI / 2;
-wheel1.position.set(-3, -1, 2);
-carBody.add(wheel1);
-
-const wheel2 = wheel1.clone();
-wheel2.position.x = 3;
-carBody.add(wheel2);
-
-const wheel3 = wheel1.clone();
-wheel3.position.z = -2;
-carBody.add(wheel3);
-
-const wheel4 = wheel2.clone();
-wheel4.position.z = -2;
-carBody.add(wheel4);
+yarnBall.castShadow = true;
 
 const player = new THREE.Group();
-player.add(carBody);
-player.position.set(0, 1, 0);
+player.add(yarnBall);
+player.position.set(0, 2.6, 0);
 scene.add(player);
 
 // Propriedades de movimento do jogador
@@ -106,57 +94,59 @@ player.velocity = new THREE.Vector3(0, 0, 0);
 function createMap() {
     const ground = new THREE.Mesh(
         new THREE.PlaneGeometry(mapSize, mapSize),
-        new THREE.MeshStandardMaterial({ color: 0x4CAF50 }) // Cor do gramado
+        new THREE.MeshStandardMaterial({ color: 0xE6E6FA }) // Lavanda, para o chão do ateliê
     );
     ground.rotation.x = -Math.PI / 2;
     ground.receiveShadow = true;
     scene.add(ground);
 
-    const roadMaterial = new THREE.MeshStandardMaterial({ color: 0x333333 });
+    const pathMaterial = new THREE.MeshStandardMaterial({ color: 0xC71585 }); // MediumVioletRed, para os caminhos
 
-    // Estradas
-    const roadWidth = 20;
-    const roadLength = mapSize / 2 - 20; // Ajusta para o tamanho da garagem
+    // Caminhos (antes estradas)
+    const pathWidth = 20;
+    const pathLength = mapSize / 2 - 20; // Ajusta para o tamanho do cantinho
 
-    const horizontalRoad = new THREE.Mesh(
-        new THREE.BoxGeometry(roadLength * 2, 0.5, roadWidth),
-        roadMaterial
+    const horizontalPath = new THREE.Mesh(
+        new THREE.BoxGeometry(pathLength * 2, 5.0, pathWidth),
+        pathMaterial
     );
-    horizontalRoad.receiveShadow = true;
-    scene.add(horizontalRoad);
+    horizontalPath.position.y = 0.1; // Eleva ligeiramente o caminho acima do chão
+    horizontalPath.receiveShadow = true;
+    scene.add(horizontalPath);
 
-    const verticalRoad = new THREE.Mesh(
-        new THREE.BoxGeometry(roadWidth, 0.5, roadLength * 2),
-        roadMaterial
+    const verticalPath = new THREE.Mesh(
+        new THREE.BoxGeometry(pathWidth, 5.0, pathLength * 2),
+        pathMaterial
     );
-    verticalRoad.receiveShadow = true;
-    scene.add(verticalRoad);
+    verticalPath.position.y = 0.1; // Eleva ligeiramente o caminho acima do chão
+    verticalPath.receiveShadow = true;
+    scene.add(verticalPath);
 
-    // Garagens
-    const garageSize = 30;
-    const garageOffset = mapSize / 2 - garageSize / 2;
+    // Cantinhos de Ateliê (antes Garagens)
+    const cornerSize = 30;
+    const cornerOffset = mapSize / 2 - cornerSize / 2;
 
-    const garageData = [
-        { x: 0, z: garageOffset, type: 'login', label: 'LOGIN', url: 'https://example.com/login', color: 0xff0000 }, // Vermelho
-        { x: 0, z: -garageOffset, type: 'about', label: 'SOBRE NÓS', url: 'https://example.com/about', color: 0x0000ff }, // Azul
-        { x: garageOffset, z: 0, type: 'amigurumi', label: 'AMIGURUMI', url: './frontInterativoAtelie/index.html', color: 0x00ff00 }, // Verde
-        { x: -garageOffset, z: 0, type: 'products', label: 'PRODUTOS', url: 'https://example.com/products', color: 0xffff00 }, // Amarelo
+    const cornerData = [
+        { x: 0, z: cornerOffset, type: 'login', label: 'MEUS PROJETOS', url: 'https://example.com/login', color: 0xDDA0DD }, // Plum
+        { x: 0, z: -cornerOffset, type: 'about', label: 'SOBRE O ATELIÊ', url: 'https://example.com/about', color: 0xE6A8D7 }, // Orchid Pink
+        { x: cornerOffset, z: 0, type: 'courses', label: 'WORKSHOPS', url: 'https://example.com/courses', color: 0xC8A2C8 }, // Lilac
+        { x: -cornerOffset, z: 0, type: 'products', label: 'MATERIAIS', url: 'https://example.com/products', color: 0xB57EDC }, // Medium Purple
     ];
 
-    garageData.forEach(data => {
-        const garage = new THREE.Mesh(
-            new THREE.BoxGeometry(garageSize, 10, garageSize),
-            new THREE.MeshStandardMaterial({ color: data.color }) // Usa a cor específica da garagem
+    cornerData.forEach(data => {
+        const corner = new THREE.Mesh(
+            new THREE.OctahedronGeometry(15, 0), // Estrela (Octahedron) com raio 15 e sem detalhes
+            new THREE.MeshStandardMaterial({ color: data.color }) // Usa a cor específica do cantinho
         );
-        garage.position.set(data.x, 5, data.z);
-        garage.receiveShadow = true;
-        garage.userData.type = data.type;
-        garage.userData.url = data.url; // Armazena a URL
-        garage.userData.label = data.label; // Armazena o label para o popup
-        garage.userData.htmlLabel = garageLabels[data.type]; // Referência ao elemento HTML
-        garage.userData.originalMaterial = garage.material; // Armazena o material original
-        scene.add(garage);
-        garages.push(garage);
+        corner.position.set(data.x, 15, data.z); // Ajusta a posição Y para o centro do octahedron
+        corner.receiveShadow = true;
+        corner.userData.type = data.type;
+        corner.userData.url = data.url;
+        corner.userData.label = data.label;
+        corner.userData.htmlLabel = atelierLabels[data.type]; // Referência ao elemento HTML do ateliê
+        corner.userData.originalMaterial = corner.material;
+        scene.add(corner);
+        atelierCorners.push(corner);
     });
 }
 
@@ -169,8 +159,8 @@ const playerSpeed = 30;
 window.addEventListener('keydown', (e) => { keyState[e.code] = true; });
 window.addEventListener('keyup', (e) => {
     keyState[e.code] = false;
-    if (e.code === 'Space' && currentGarageType) { // Interage com Espaço
-        openPage(currentGarageType);
+    if (e.code === 'Space' && currentCornerType) { // Interage com Espaço
+        openPage(currentCornerType);
     }
 });
 
@@ -198,8 +188,8 @@ setupMobileButton(leftBtn, 'ArrowLeft');
 setupMobileButton(rightBtn, 'ArrowRight');
 
 actionBtn.addEventListener('click', () => {
-    if (currentGarageType) {
-        openPage(currentGarageType);
+    if (currentCornerType) {
+        openPage(currentCornerType);
     }
 });
 
@@ -219,10 +209,12 @@ function updatePlayerMovement() {
     player.position.x += player.velocity.x * dt;
     player.position.z += player.velocity.z * dt;
 
-    // Rotação do carrinho
+    // Rotação da bola de novelo (simula rolamento)
     if (moveDirection.lengthSq() > 0.01) { // Só gira se estiver se movendo
-        const angle = Math.atan2(moveDirection.x, moveDirection.z);
-        player.rotation.y = angle; // Gira o carrinho para a direção do movimento
+        // Calcula a rotação com base na direção do movimento
+        const rotationAxis = new THREE.Vector3(-moveDirection.z, 0, moveDirection.x).normalize();
+        const rotationAngle = (player.velocity.length() * dt) / (3); // 3 é o raio da esfera
+        player.children[0].rotateOnWorldAxis(rotationAxis, rotationAngle);
     }
 
     // Limita o jogador dentro do mapa
@@ -230,18 +222,18 @@ function updatePlayerMovement() {
     player.position.x = Math.max(-halfMap, Math.min(halfMap, player.position.x));
     player.position.z = Math.max(-halfMap, Math.min(halfMap, player.position.z));
 
-    checkGarageInteraction();
+    checkCornerInteraction(); // Renomeado
 }
 
 const tempV = new THREE.Vector3(); // Vetor temporário para evitar alocações repetidas
-function updateGarageLabels() {
-    garages.forEach(garage => {
-        const label = garage.userData.htmlLabel;
+function updateCornerLabels() { // Renomeado
+    atelierCorners.forEach(corner => {
+        const label = corner.userData.htmlLabel;
         if (!label) return;
 
-        // Obtém a posição 3D da garagem
-        garage.updateWorldMatrix(true, false);
-        tempV.setFromMatrixPosition(garage.matrixWorld);
+        // Obtém a posição 3D do cantinho
+        corner.updateWorldMatrix(true, false);
+        tempV.setFromMatrixPosition(corner.matrixWorld);
 
         // Projeta a posição 3D para a tela 2D
         tempV.project(camera);
@@ -252,56 +244,56 @@ function updateGarageLabels() {
 
         // Ajuste manual para cada label para evitar sobreposição com header/footer
         // Aumentando os offsets para garantir visibilidade
-        if (garage.userData.type === 'login') { // Garagem de cima (Z positivo)
+        if (corner.userData.type === 'login') { // Cantinho de cima (Z positivo)
             y -= 20; // Move mais para cima
-        } else if (garage.userData.type === 'about') { // Garagem de baixo (Z negativo)
+        } else if (corner.userData.type === 'about') { // Cantinho de baixo (Z negativo)
             y += 20; // Move mais para baixo
-        } else if (garage.userData.type === 'amigurumi') { // Garagem da direita (X positivo)
+        } else if (corner.userData.type === 'courses') { // Cantinho da direita (X positivo)
             y -= 20; // Pequeno ajuste para cima
-        } else if (garage.userData.type === 'products') { // Garagem da esquerda (X negativo)
+        } else if (corner.userData.type === 'products') { // Cantinho da esquerda (X negativo)
             y -= 20; // Pequeno ajuste para cima
         }
 
         label.style.left = `${x}px`;
         label.style.top = `${y}px`;
 
-        // Verifica se a garagem está visível na tela
+        // Verifica se o cantinho está visível na tela
         const isVisible = tempV.z > -1 && tempV.z < 1; // Dentro do frustum da câmera
         label.classList.toggle('hidden', !isVisible); // Labels are always visible if in camera frustum
     });
 }
 
-function checkGarageInteraction() {
-    let foundGarage = null; // Armazena a garagem encontrada
+function checkCornerInteraction() { // Renomeado
+    let foundCorner = null; // Armazena o cantinho encontrado
     const playerBox = new THREE.Box3().setFromObject(player);
 
-    for (const garage of garages) {
-        const garageBox = new THREE.Box3().setFromObject(garage);
-        if (playerBox.intersectsBox(garageBox)) {
-            foundGarage = garage;
+    for (const corner of atelierCorners) { // Iterar sobre 'atelierCorners'
+        const cornerBox = new THREE.Box3().setFromObject(corner);
+        if (playerBox.intersectsBox(cornerBox)) {
+            foundCorner = corner;
             break;
         }
     }
 
-    if (foundGarage) {
-        currentGarageType = foundGarage.userData.type;
-        // Destaca a garagem
-        if (highlightedGarage !== foundGarage) {
-            if (highlightedGarage) {
-                highlightedGarage.material = highlightedGarage.userData.originalMaterial;
+    if (foundCorner) {
+        currentCornerType = foundCorner.userData.type;
+        // Destaca o cantinho
+        if (highlightedCorner !== foundCorner) {
+            if (highlightedCorner) {
+                highlightedCorner.material = highlightedCorner.userData.originalMaterial;
             }
-            highlightedGarage = foundGarage;
-            highlightedGarage.material = highlightMaterial;
+            highlightedCorner = foundCorner;
+            highlightedCorner.material = highlightMaterial;
         }
         // Mostra o prompt de interação
-        promptText.innerText = `Pressione Espaço para acessar ${foundGarage.userData.label}`;
+        promptText.innerText = `Pressione Espaço para acessar ${foundCorner.userData.label}`;
         interactionPrompt.classList.remove('hidden');
     } else {
-        currentGarageType = null;
-        // Remove o destaque da garagem
-        if (highlightedGarage) {
-            highlightedGarage.material = highlightedGarage.userData.originalMaterial;
-            highlightedGarage = null;
+        currentCornerType = null;
+        // Remove o destaque do cantinho
+        if (highlightedCorner) {
+            highlightedCorner.material = highlightedCorner.userData.originalMaterial;
+            highlightedCorner = null;
         }
         // Esconde o prompt de interação
         interactionPrompt.classList.add('hidden');
@@ -309,11 +301,11 @@ function checkGarageInteraction() {
 }
 
 function openPage(type) {
-    const garage = garages.find(g => g.userData.type === type);
-    if (garage && garage.userData.url) {
-        window.open(garage.userData.url, '_blank');
-        infoTitle.innerText = `Acessando ${garage.userData.label}`;
-        infoContent.innerText = `Abrindo ${garage.userData.url} em uma nova aba.`;
+    const corner = atelierCorners.find(g => g.userData.type === type); // Buscar em 'atelierCorners'
+    if (corner && corner.userData.url) {
+        window.open(corner.userData.url, '_blank');
+        infoTitle.innerText = `Acessando ${corner.userData.label}`;
+        infoContent.innerText = `Abrindo ${corner.userData.url} em uma nova aba.`;
         infoDisplay.classList.remove('hidden');
     }
 }
@@ -322,7 +314,7 @@ function openPage(type) {
 function animate() {
     requestAnimationFrame(animate);
     updatePlayerMovement();
-    updateGarageLabels(); // Garante que os rótulos sejam atualizados a cada frame
+    updateCornerLabels(); // Garante que os rótulos sejam atualizados a cada frame
     renderer.render(scene, camera);
 }
 

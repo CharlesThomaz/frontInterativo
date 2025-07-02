@@ -1,0 +1,290 @@
+body {
+    margin: 0;
+    overflow: hidden;
+    font-family: 'Georgia', serif; /* Fonte mais clássica/feminina */
+    background-color: #F8F0E3; /* Creme suave */
+    color: #5C4033; /* Marrom escuro para texto */
+}
+
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: rgba(255, 228, 225, 0.8); /* Rosa claro transparente */
+    padding: 15px 0;
+    text-align: center;
+    z-index: 100;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+header h1 {
+    margin: 0;
+    color: #B06A7F; /* Rosa antigo */
+    font-size: 2.2em;
+    font-family: 'Brush Script MT', cursive; /* Fonte mais decorativa */
+}
+
+footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 10px 0;
+    text-align: center;
+    z-index: 101; /* Increased z-index to ensure visibility */
+    font-size: 0.9em;
+    color: #eee;
+}
+
+#bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+#ui-container {
+    position: fixed;
+    top: 80px;
+    left: 10px;
+    z-index: 10;
+}
+
+#observation-box {
+    padding: 10px;
+    background-color: rgba(255, 240, 245, 0.9); /* Lavanda blush transparente */
+    color: #5C4033;
+    border-radius: 12px;
+    font-size: 0.95em;
+    border: 1px solid #DDA0DD; /* Ameixa suave */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    max-width: 280px;
+}
+
+#interaction-prompt {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 12px 25px;
+    background-color: rgba(255, 240, 245, 0.95); /* Lavanda blush mais opaco */
+    color: #5C4033;
+    border-radius: 15px;
+    font-size: 1.3em;
+    text-align: center;
+    border: 2px solid #DDA0DD;
+    z-index: 100;
+}
+
+#info-display {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 35px;
+    background-color: rgba(255, 240, 245, 0.98); /* Lavanda blush quase opaco */
+    color: #5C4033;
+    border-radius: 18px;
+    text-align: center;
+    font-size: 1.3em;
+    border: 3px solid #DDA0DD;
+    max-width: 85%;
+    box-shadow: 0 5px 18px rgba(0,0,0,0.4);
+    z-index: 1000;
+}
+
+#info-display h2 {
+    color: #B06A7F;
+    margin-top: 0;
+    font-family: 'Brush Script MT', cursive;
+    font-size: 1.8em;
+}
+
+#info-display button {
+    margin-top: 25px;
+    padding: 12px 25px;
+    background-color: #DDA0DD; /* Ameixa suave */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.1em;
+    transition: background-color 0.3s ease;
+}
+
+#info-display button:hover {
+    background-color: #C792C7; /* Ameixa um pouco mais escura */
+}
+
+.hidden {
+    display: none;
+}
+
+.garage-label {
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 0.8em;
+    white-space: nowrap;
+    transform: translate(-50%, -50%); /* Centraliza o label */
+    z-index: 50; /* Acima do canvas, abaixo dos popups */
+    border: 1px solid #fff;
+}
+
+/* Mobile Controls - Initially hidden */
+#mobile-controls {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    left: auto;
+    transform: none;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    z-index: 100;
+    background-color: rgba(255, 228, 225, 0.7); /* Rosa claro transparente */
+    padding: 18px;
+    border-radius: 15px;
+    box-shadow: 0 0 18px rgba(0,0,0,0.3);
+}
+
+.d-pad {
+    display: grid;
+    grid-template-areas:
+        ". up ."
+        "left . right"
+        ". down .";
+    gap: 6px;
+    width: 160px;
+    height: 160px;
+}
+
+.d-pad .control-btn {
+    background-color: #DDA0DD; /* Ameixa suave */
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 55px;
+    height: 55px;
+    font-size: 1.6em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    transition: background-color 0.2s ease;
+}
+
+.d-pad .control-btn:active {
+    background-color: #C792C7;
+}
+
+#up-btn { grid-area: up; }
+#left-btn { grid-area: left; }
+#right-btn { grid-area: right; }
+#down-btn { grid-area: down; }
+
+.d-pad .middle-row {
+    display: flex;
+    justify-content: space-between;
+    grid-area: left / left / right / right;
+}
+
+#action-btn {
+    background-color: #FFDAB9; /* Pêssego claro */
+    color: #5C4033;
+    border: none;
+    border-radius: 12px;
+    padding: 18px 35px;
+    font-size: 1.3em;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    transition: background-color 0.2s ease;
+    width: 100%;
+    max-width: 200px;
+}
+
+#action-btn:active {
+    background-color: #E6C2A0;
+}
+
+/* Media Queries for Responsiveness */
+
+/* For screens smaller than 768px (e.g., tablets and phones) */
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 1.8em;
+    }
+
+    footer {
+        font-size: 0.8em;
+        padding: 8px 0;
+    }
+
+    #ui-container {
+        top: 65px;
+        left: 8px;
+    }
+
+    #observation-box {
+        max-width: 200px;
+        font-size: 0.8em;
+        padding: 8px;
+    }
+
+    #interaction-prompt {
+        font-size: 1.1em;
+        padding: 10px 20px;
+    }
+
+    #info-display {
+        padding: 25px;
+        font-size: 1.1em;
+        max-width: 90%;
+    }
+
+    #info-display h2 {
+        font-size: 1.5em;
+    }
+
+    #info-display button {
+        padding: 10px 20px;
+        font-size: 1em;
+    }
+
+    .garage-label {
+        font-size: 0.75em;
+        padding: 4px 10px;
+    }
+
+    /* Show mobile controls on smaller screens */
+    #mobile-controls {
+        display: flex;
+    }
+}
+
+/* For screens smaller than 480px (e.g., phones) */
+@media (max-width: 480px) {
+    header h1 {
+        font-size: 1.5em;
+    }
+
+    footer {
+        font-size: 0.7em;
+    }
+
+    #ui-container {
+        top: 60px;
+    }
+
+    #mobile-controls {
+        /* bottom: 50px; Removed to use general positioning */
+    }
+}
