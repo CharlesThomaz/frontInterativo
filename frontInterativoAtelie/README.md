@@ -2,12 +2,15 @@
 
 ## Descrição
 
-Este é um projeto web interativo que simula um ambiente 3D onde o usuário controla um carrinho. O objetivo é dirigir o carrinho até diferentes "garagens", cada uma representando uma seção do site (Login, Sobre Nós, Cursos, Produtos). Ao entrar em uma garagem e pressionar a tecla de interação, o usuário é redirecionado para a página correspondente.
+Este é um projeto web interativo que simula um ambiente 3D onde o usuário controla um carrinho. O objetivo é dirigir o novelo até diferentes "garagens", cada uma representando uma seção do site (Login, Sobre Nós, Cursos, Produtos). Ao entrar em uma area e pressionar a tecla de interação, o usuário é redirecionado para a página correspondente.
+
+## Preview
+![previewDoHtml](./img/preview.png)
 
 ## Funcionalidades
 
 - Ambiente 3D interativo com câmera ortográfica.
-- Controle de carrinho com movimentação (WASD/Setas) e rotação.
+- Controle de novelo com movimentação (WASD/Setas) e rotação.
 - Garagens interativas que redirecionam para URLs externas.
 - Destaque visual para a garagem atual.
 - Rótulos dinâmicos para as garagens, visíveis na tela.
@@ -15,8 +18,8 @@ Este é um projeto web interativo que simula um ambiente 3D onde o usuário cont
 
 ## Como Usar
 
-1.  **Movimentação:** Use as teclas `WASD` ou as `Setas` do teclado para mover o carrinho pelo cenário.
-2.  **Interação:** Dirija o carrinho até uma das garagens. Um prompt aparecerá na tela. Pressione a tecla `Espaço` para acessar a página correspondente à garagem.
+1.  **Movimentação:** Use as teclas `WASD` ou as `Setas` do teclado para mover o novelo pelo cenário.
+2.  **Interação:** Dirija o carrnoveloinho até uma das áreas. Um prompt aparecerá na tela. Pressione a tecla `Espaço` para acessar a página correspondente à área.
 
 ## Tecnologias Utilizadas
 

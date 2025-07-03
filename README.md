@@ -4,6 +4,9 @@
 
 Este é um projeto web interativo que simula um ambiente 3D onde o usuário controla um carrinho. O objetivo é dirigir o carrinho até diferentes "garagens", cada uma representando uma seção do site (Login, Sobre Nós, Cursos, Produtos). Ao entrar em uma garagem e pressionar a tecla de interação, o usuário é redirecionado para a página correspondente.
 
+## Preview
+![previewDoHtml](./img/preview.png)
+
 ## Funcionalidades
 
 - Ambiente 3D interativo com câmera ortográfica.
